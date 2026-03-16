@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, ClipboardList } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Visit } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { format } from 'date-fns';
 
 const Visits: React.FC = () => {
@@ -15,16 +15,7 @@ const Visits: React.FC = () => {
 
   const fetchVisits = async () => {
     try {
-      const { data, error } = await supabase
-        .from('visits')
-        .select(`
-          *,
-          patient:patients(*)
-        `)
-        .order('visit_date', { ascending: false })
-        .order('visit_time', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.visits.getAll();
       setVisits(data || []);
     } catch (error) {
       console.error('Error fetching visits:', error);

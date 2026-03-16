@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Users, Calendar, DollarSign, TrendingUp } from 'lucide-react';
 import Layout from '../components/Layout';
 import { DashboardStats } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -20,43 +20,8 @@ const Dashboard: React.FC = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      // Fetch total patients
-      const { count: patientsCount } = await supabase
-        .from('patients')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch today's appointments
-      const today = new Date().toISOString().split('T')[0];
-      const { count: appointmentsCount } = await supabase
-        .from('appointments')
-        .select('*', { count: 'exact', head: true })
-        .eq('appointment_date', today);
-
-      // Fetch pending bills
-      const { count: pendingBillsCount } = await supabase
-        .from('bills')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['pending', 'overdue']);
-
-      // Fetch monthly revenue
-      const firstDayOfMonth = new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        1
-      ).toISOString();
-      const { data: bills } = await supabase
-        .from('bills')
-        .select('paid_amount')
-        .gte('created_at', firstDayOfMonth);
-
-      const revenue = bills?.reduce((sum, bill) => sum + (bill.paid_amount || 0), 0) || 0;
-
-      setStats({
-        totalPatients: patientsCount || 0,
-        todayAppointments: appointmentsCount || 0,
-        pendingBills: pendingBillsCount || 0,
-        monthlyRevenue: revenue,
-      });
+      const data = await api.stats.get();
+      setStats(data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
     } finally {

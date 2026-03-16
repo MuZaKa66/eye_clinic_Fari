@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Layout from '../components/Layout';
 import { PatientFormData } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 const PatientForm: React.FC = () => {
   const { id } = useParams();
@@ -39,13 +39,7 @@ const PatientForm: React.FC = () => {
 
   const fetchPatient = async () => {
     try {
-      const { data, error } = await supabase
-        .from('patients')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
+      const data = await api.patients.getById(id!);
       if (data) {
         setFormData(data);
       }
@@ -69,16 +63,9 @@ const PatientForm: React.FC = () => {
 
     try {
       if (isEditMode) {
-        const { error } = await supabase
-          .from('patients')
-          .update(formData)
-          .eq('id', id);
-
-        if (error) throw error;
+        await api.patients.update(id!, formData);
       } else {
-        const { error } = await supabase.from('patients').insert([formData]);
-
-        if (error) throw error;
+        await api.patients.create(formData);
       }
 
       navigate('/patients');

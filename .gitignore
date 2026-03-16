@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# SQLite database
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm

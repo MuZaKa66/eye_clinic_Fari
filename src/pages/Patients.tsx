@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Search, Edit, Eye } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Patient } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { format } from 'date-fns';
 
 const Patients: React.FC = () => {
@@ -17,12 +17,7 @@ const Patients: React.FC = () => {
 
   const fetchPatients = async () => {
     try {
-      const { data, error } = await supabase
-        .from('patients')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.patients.getAll();
       setPatients(data || []);
     } catch (error) {
       console.error('Error fetching patients:', error);

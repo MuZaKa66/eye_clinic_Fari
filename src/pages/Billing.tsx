@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, DollarSign, FileText } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Bill } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { format } from 'date-fns';
 
 const Billing: React.FC = () => {
@@ -16,21 +16,9 @@ const Billing: React.FC = () => {
 
   const fetchBills = async () => {
     try {
-      let query = supabase
-        .from('bills')
-        .select(`
-          *,
-          patient:patients(*)
-        `)
-        .order('bill_date', { ascending: false });
-
-      if (filterStatus !== 'all') {
-        query = query.eq('status', filterStatus);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
+      const data = await api.bills.getAll(
+        filterStatus !== 'all' ? { status: filterStatus } : undefined
+      );
       setBills(data || []);
     } catch (error) {
       console.error('Error fetching bills:', error);

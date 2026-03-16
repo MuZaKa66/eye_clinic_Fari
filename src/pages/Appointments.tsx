@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Calendar as CalendarIcon } from 'lucide-react';
 import Layout from '../components/Layout';
 import { Appointment } from '../types';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 import { format } from 'date-fns';
 
 const Appointments: React.FC = () => {
@@ -16,21 +16,9 @@ const Appointments: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-      let query = supabase
-        .from('appointments')
-        .select(`
-          *,
-          patient:patients(*)
-        `)
-        .order('appointment_time', { ascending: true });
-
-      if (filterDate) {
-        query = query.eq('appointment_date', filterDate);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
+      const data = await api.appointments.getAll(
+        filterDate ? { date: filterDate } : undefined
+      );
       setAppointments(data || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -53,12 +41,7 @@ const Appointments: React.FC = () => {
 
   const updateAppointmentStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('appointments')
-        .update({ status })
-        .eq('id', id);
-
-      if (error) throw error;
+      await api.appointments.update(id, { status });
       fetchAppointments();
     } catch (error) {
       console.error('Error updating appointment:', error);

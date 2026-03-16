@@ -1,295 +1,160 @@
 # Eye Clinic Management System
 
-A comprehensive web-based management system for eye clinics built with React, TypeScript, Vite, Tailwind CSS, and Supabase.
+A comprehensive, locally-deployable clinic management system built with React, TypeScript, Express, and SQLite.
 
 ## Features
 
-- **Patient Management**: Register and manage patient records with comprehensive information including personal details, medical history, allergies, and insurance information
-- **Appointment Scheduling**: Schedule, track, and manage patient appointments with various appointment types and statuses
-- **Visit Records**: Document patient visits with chief complaints, diagnoses, treatment plans, and follow-up information
-- **Examinations**: Record detailed eye examination results including visual acuity, intraocular pressure, refraction measurements, and fundus exam findings
-- **Prescriptions**: Issue prescriptions for eyeglasses, contact lenses, and medications
-- **Billing & Invoicing**: Create and manage bills, track payments, and monitor outstanding balances
-- **Dashboard**: View clinic statistics and quick access to common actions
-- **User Authentication**: Secure login and signup system with role-based access
-- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
+- **Patient Management**: Complete patient records with demographics, medical history, insurance, and emergency contacts
+- **Appointment Scheduling**: Schedule and manage patient appointments with status tracking
+- **Visit Documentation**: Record patient visits with chief complaints, diagnoses, and treatment plans
+- **Billing & Invoicing**: Generate bills, track payments, and manage outstanding balances
+- **Authentication**: Secure user authentication with JWT tokens
+- **Dashboard**: Overview statistics and quick actions
+- **Local Deployment**: Runs completely locally with SQLite database
 
-## Tech Stack
+## Technology Stack
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
+- **Frontend**: React 18, TypeScript, Vite
+- **Backend**: Express.js, Node.js
+- **Database**: SQLite with better-sqlite3
+- **Authentication**: JWT tokens with bcrypt password hashing
 - **Styling**: Tailwind CSS
-- **Routing**: React Router DOM v6
-- **Backend**: Supabase (PostgreSQL database, Authentication, Real-time subscriptions)
 - **Icons**: Lucide React
-- **Date Handling**: date-fns
-
-## Project Structure
-
-```
-project/
-├── public/              # Static assets
-├── src/
-│   ├── components/      # Reusable components
-│   │   ├── Layout.tsx
-│   │   ├── Sidebar.tsx
-│   │   └── Navbar.tsx
-│   ├── pages/          # Page components
-│   │   ├── Login.tsx
-│   │   ├── Signup.tsx
-│   │   ├── Dashboard.tsx
-│   │   ├── Patients.tsx
-│   │   ├── PatientForm.tsx
-│   │   ├── Appointments.tsx
-│   │   ├── Visits.tsx
-│   │   ├── Billing.tsx
-│   │   └── Settings.tsx
-│   ├── lib/            # Utilities and configurations
-│   │   ├── supabase.ts
-│   │   └── AuthContext.tsx
-│   ├── types/          # TypeScript type definitions
-│   │   └── index.ts
-│   ├── App.tsx         # Main application component
-│   ├── main.tsx        # Application entry point
-│   └── index.css       # Global styles
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-└── postcss.config.js
-```
 
 ## Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Supabase account (free tier available)
+- Node.js 18+ and npm
+- Git
 
-## Installation
+## Quick Start
 
-1. **Clone or navigate to the project directory:**
-
+1. **Clone the repository**
    ```bash
-   cd /tmp/cc-agent/64734039/project
+   git clone https://github.com/MuZaKa66/eye_clinic_Fari.git
+   cd eye_clinic_Fari
    ```
 
-2. **Install dependencies:**
-
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Set up environment variables:**
-
-   Create a `.env` file in the root directory:
-
+3. **Set up environment variables**
    ```bash
    cp .env.example .env
    ```
+   Edit `.env` and update the JWT_SECRET if desired (optional for development)
 
-   Edit `.env` and add your Supabase credentials:
-
-   ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+4. **Start the application**
+   ```bash
+   npm run dev
    ```
 
-4. **Set up Supabase Database:**
+   This will start both the backend server (port 3001) and frontend dev server (port 5173)
 
-   Create the following tables in your Supabase database:
+5. **Access the application**
+   Open your browser and navigate to `http://localhost:5173`
 
-   **Patients Table:**
-   ```sql
-   create table patients (
-     id uuid default uuid_generate_v4() primary key,
-     first_name text not null,
-     last_name text not null,
-     date_of_birth date not null,
-     gender text not null check (gender in ('male', 'female', 'other')),
-     email text,
-     phone text not null,
-     address text,
-     city text,
-     state text,
-     zip_code text,
-     emergency_contact_name text,
-     emergency_contact_phone text,
-     insurance_provider text,
-     insurance_policy_number text,
-     medical_history text,
-     allergies text,
-     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-   );
-   ```
+6. **Create your first account**
+   Click "Sign up" and create your admin account
 
-   **Appointments Table:**
-   ```sql
-   create table appointments (
-     id uuid default uuid_generate_v4() primary key,
-     patient_id uuid references patients(id) on delete cascade not null,
-     appointment_date date not null,
-     appointment_time time not null,
-     appointment_type text not null check (appointment_type in ('consultation', 'follow_up', 'emergency', 'surgery', 'other')),
-     status text not null check (status in ('scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show')),
-     reason text,
-     notes text,
-     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-   );
-   ```
+## Database
 
-   **Visits Table:**
-   ```sql
-   create table visits (
-     id uuid default uuid_generate_v4() primary key,
-     patient_id uuid references patients(id) on delete cascade not null,
-     appointment_id uuid references appointments(id) on delete set null,
-     visit_date date not null,
-     visit_time time not null,
-     chief_complaint text not null,
-     diagnosis text,
-     treatment_plan text,
-     notes text,
-     follow_up_date date,
-     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-   );
-   ```
+The SQLite database will be automatically created at `data/clinic.db` when you first start the server. The schema includes:
 
-   **Bills Table:**
-   ```sql
-   create table bills (
-     id uuid default uuid_generate_v4() primary key,
-     patient_id uuid references patients(id) on delete cascade not null,
-     visit_id uuid references visits(id) on delete set null,
-     bill_date date not null,
-     due_date date,
-     total_amount numeric(10, 2) not null,
-     paid_amount numeric(10, 2) default 0 not null,
-     balance numeric(10, 2) not null,
-     status text not null check (status in ('pending', 'partial', 'paid', 'overdue', 'cancelled')),
-     payment_method text check (payment_method in ('cash', 'card', 'insurance', 'check', 'other')),
-     notes text,
-     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-   );
-   ```
+- Users (authentication)
+- Patients (patient records)
+- Appointments (scheduling)
+- Visits (visit documentation)
+- Examinations (eye exam results)
+- Prescriptions (eyewear and medications)
+- Bills (invoicing)
+- Bill Items (line items)
+- Payments (payment tracking)
 
-5. **Enable Row Level Security (RLS) in Supabase:**
+## Development
 
-   For each table, enable RLS and create policies as needed. Example policy for authenticated users:
-
-   ```sql
-   alter table patients enable row level security;
-
-   create policy "Enable read access for authenticated users" on patients
-     for select using (auth.role() = 'authenticated');
-
-   create policy "Enable insert for authenticated users" on patients
-     for insert with check (auth.role() = 'authenticated');
-
-   create policy "Enable update for authenticated users" on patients
-     for update using (auth.role() = 'authenticated');
-   ```
-
-   Repeat similar policies for other tables.
-
-## Running the Application
-
-**Development mode:**
-
+### Running Tests
 ```bash
-npm run dev
+npm test
 ```
 
-The application will be available at `http://localhost:5173`
-
-**Build for production:**
-
+### Building for Production
 ```bash
 npm run build
 ```
 
-**Preview production build:**
-
+### Linting
 ```bash
-npm run preview
+npm run lint
 ```
 
-## Usage
+## Project Structure
 
-1. **Sign Up / Sign In:**
-   - Navigate to the signup page to create a new account
-   - Or sign in with existing credentials
+```
+eye-clinic-management-system/
+├── src/                    # Frontend source code
+│   ├── components/         # Reusable React components
+│   ├── pages/             # Page components
+│   ├── lib/               # API client and utilities
+│   └── types/             # TypeScript type definitions
+├── server/                # Backend source code
+│   ├── routes/            # API route handlers
+│   ├── middleware/        # Express middleware
+│   └── database.ts        # SQLite database setup
+├── data/                  # SQLite database files
+└── public/                # Static assets
+```
 
-2. **Dashboard:**
-   - View clinic statistics including total patients, today's appointments, pending bills, and monthly revenue
-   - Access quick actions for common tasks
+## API Endpoints
 
-3. **Manage Patients:**
-   - Add new patients with comprehensive information
-   - View all patients in a searchable list
-   - Edit patient information
+### Authentication
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/login` - Login
+- `POST /api/auth/logout` - Logout
 
-4. **Schedule Appointments:**
-   - Create new appointments for patients
-   - View appointments by date
-   - Update appointment status
+### Patients
+- `GET /api/patients` - List all patients
+- `GET /api/patients/:id` - Get patient by ID
+- `POST /api/patients` - Create new patient
+- `PUT /api/patients/:id` - Update patient
+- `DELETE /api/patients/:id` - Delete patient
 
-5. **Record Visits:**
-   - Document patient visits with complaints, diagnosis, and treatment
-   - Link visits to appointments
+### Appointments
+- `GET /api/appointments` - List appointments
+- `GET /api/appointments/:id` - Get appointment by ID
+- `POST /api/appointments` - Create appointment
+- `PUT /api/appointments/:id` - Update appointment
+- `DELETE /api/appointments/:id` - Delete appointment
 
-6. **Manage Billing:**
-   - Create invoices for services
-   - Track payments and outstanding balances
-   - Filter bills by status
+### Visits
+- `GET /api/visits` - List visits
+- `GET /api/visits/:id` - Get visit by ID
+- `POST /api/visits` - Create visit
+- `PUT /api/visits/:id` - Update visit
+- `DELETE /api/visits/:id` - Delete visit
 
-7. **Settings:**
-   - Update profile information
-   - Change password
-   - Configure notification preferences
+### Bills
+- `GET /api/bills` - List bills
+- `GET /api/bills/:id` - Get bill by ID
+- `POST /api/bills` - Create bill
+- `PUT /api/bills/:id` - Update bill
+- `DELETE /api/bills/:id` - Delete bill
 
-## Default Credentials
+### Stats
+- `GET /api/stats` - Get dashboard statistics
 
-After setting up Supabase authentication, you can create your first user through the signup page.
+## Security
 
-## Features in Development
-
-- PDF export for prescriptions and bills
-- Patient medical history timeline
-- Advanced search and filtering
-- Email notifications
-- Appointment reminders
-- Multi-user roles and permissions
-- Analytics and reporting
-
-## Contributing
-
-This is a demonstration project. For production use, ensure you:
-
-- Implement proper authentication and authorization
-- Add comprehensive error handling
-- Set up proper database indexes
-- Configure backup strategies
-- Add unit and integration tests
-- Implement audit logging
-- Add data validation
-- Configure proper CORS settings
+- All passwords are hashed using bcrypt
+- JWT tokens for authentication
+- All API routes (except auth) require authentication
+- SQL injection protection through parameterized queries
 
 ## License
 
-MIT License - feel free to use this project for learning or as a starting point for your own clinic management system.
+MIT
 
 ## Support
 
-For issues or questions, please create an issue in the repository.
-
-## Acknowledgments
-
-- Built with [Vite](https://vitejs.dev/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Backend by [Supabase](https://supabase.com/)
+For issues and questions, please open an issue on GitHub.
