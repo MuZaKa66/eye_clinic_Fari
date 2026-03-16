@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { authenticateToken } from '../middleware/auth';
 import { logActivity } from '../middleware/activityLogger';
-import { db } from '../database';
+import db from '../database';
 
 const router = express.Router();
 

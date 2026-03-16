@@ -1,5 +1,5 @@
 import express from 'express';
-import { db } from '../database';
+import db from '../database';
 import { authenticateToken } from '../middleware/auth';
 import { logActivity } from '../middleware/activityLogger';
 
