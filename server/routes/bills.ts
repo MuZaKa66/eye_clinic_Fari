@@ -1,7 +1,7 @@
 import express from 'express';
 import { randomUUID } from 'crypto';
-import db from '../database.js';
-import { authenticateToken, AuthRequest } from '../middleware/auth.js';
+import db from '../database';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import db from '../database.js';
-import { authenticateToken } from '../middleware/auth.js';
+import db from '../database';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -265,7 +265,7 @@ router.post('/filter-presets', (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
     const { presetName, entityType, filterData, isDefault } = req.body;
 
-    const { generateId } = require('../utils/idGenerator.js');
+    const { generateId } = require('../utils/idGenerator');
     const presetId = generateId();
 
     if (isDefault) {

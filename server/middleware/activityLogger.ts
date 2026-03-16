@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import db from '../database.js';
-import { generateId } from '../utils/idGenerator.js';
+import db from '../database';
+import { generateId } from '../utils/idGenerator';
 
 export function logActivity(action: string, entityType: string, entityId?: string, changes?: any) {
   return (req: Request, res: Response, next: NextFunction) => {

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import db from '../database.js';
-import { authenticateToken } from '../middleware/auth.js';
-import { generateAppointmentNumber, generateId } from '../utils/idGenerator.js';
+import db from '../database';
+import { authenticateToken } from '../middleware/auth';
+import { generateAppointmentNumber, generateId } from '../utils/idGenerator';
 
 const router = express.Router();
 

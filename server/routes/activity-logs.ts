@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import db from '../database.js';
-import { authenticateToken } from '../middleware/auth.js';
-import { checkRole } from '../middleware/rbac.js';
+import db from '../database';
+import { authenticateToken } from '../middleware/auth';
+import { checkRole } from '../middleware/rbac';
 
 const router = express.Router();
 
