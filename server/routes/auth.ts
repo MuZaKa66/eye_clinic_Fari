@@ -16,17 +16,21 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
+    const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
+    const isFirstUser = userCount.count === 0;
+    const role = isFirstUser ? 'admin' : 'doctor';
+
     const passwordHash = await bcrypt.hash(password, 10);
     const userId = randomUUID();
 
     db.prepare(
-      'INSERT INTO users (id, email, password_hash, full_name) VALUES (?, ?, ?, ?)'
-    ).run(userId, email, passwordHash, fullName);
+      'INSERT INTO users (id, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)'
+    ).run(userId, email, passwordHash, fullName, role);
 
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
-      user: { id: userId, email, full_name: fullName },
+      user: { id: userId, email, full_name: fullName, role },
       token
     });
   } catch (error) {
@@ -52,7 +56,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
-      user: { id: user.id, email: user.email, full_name: user.full_name },
+      user: { id: user.id, email: user.email, full_name: user.full_name, role: user.role },
       token
     });
   } catch (error) {
