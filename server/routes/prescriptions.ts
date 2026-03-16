@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../database';
-import { authenticateTokenToken } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
 import { logActivity } from '../middleware/activityLogger';
 
 const router = express.Router();
