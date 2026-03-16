@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { authenticate } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
 import { logActivity } from '../middleware/activityLogger';
 import { db } from '../database';
 
@@ -17,7 +17,7 @@ const sanitizeFilename = (filename: string): string => {
   return filename.replace(/[^a-z0-9._-]/gi, '_').toLowerCase();
 };
 
-router.post('/prescription', authenticate, logActivity('upload', 'create'), async (req, res) => {
+router.post('/prescription', authenticateToken, logActivity('upload', 'create'), async (req, res) => {
   try {
     const { prescriptionId, file, filename } = req.body;
 
@@ -42,7 +42,7 @@ router.post('/prescription', authenticate, logActivity('upload', 'create'), asyn
   }
 });
 
-router.post('/test-report', authenticate, logActivity('upload', 'create'), async (req, res) => {
+router.post('/test-report', authenticateToken, logActivity('upload', 'create'), async (req, res) => {
   try {
     const { visitId, file, filename } = req.body;
 
@@ -64,7 +64,7 @@ router.post('/test-report', authenticate, logActivity('upload', 'create'), async
   }
 });
 
-router.get('/:filename', authenticate, async (req, res) => {
+router.get('/:filename', authenticateToken, async (req, res) => {
   try {
     const { filename } = req.params;
     const sanitizedFilename = sanitizeFilename(filename);
@@ -81,7 +81,7 @@ router.get('/:filename', authenticate, async (req, res) => {
   }
 });
 
-router.get('/prescription/:prescriptionId', authenticate, async (req, res) => {
+router.get('/prescription/:prescriptionId', authenticateToken, async (req, res) => {
   try {
     const { prescriptionId } = req.params;
     const prescription = db.prepare('SELECT prescription_image_path FROM prescriptions WHERE id = ?').get(prescriptionId);
@@ -103,7 +103,7 @@ router.get('/prescription/:prescriptionId', authenticate, async (req, res) => {
   }
 });
 
-router.get('/test-reports/:visitId', authenticate, async (req, res) => {
+router.get('/test-reports/:visitId', authenticateToken, async (req, res) => {
   try {
     const { visitId } = req.params;
     const files = fs.readdirSync(UPLOADS_DIR)
@@ -121,7 +121,7 @@ router.get('/test-reports/:visitId', authenticate, async (req, res) => {
   }
 });
 
-router.delete('/:filename', authenticate, logActivity('upload', 'delete'), async (req, res) => {
+router.delete('/:filename', authenticateToken, logActivity('upload', 'delete'), async (req, res) => {
   try {
     const { filename } = req.params;
     const sanitizedFilename = sanitizeFilename(filename);

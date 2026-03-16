@@ -1,11 +1,11 @@
 import express from 'express';
 import { db } from '../database';
-import { authenticate } from '../middleware/auth';
+import { authenticateTokenToken } from '../middleware/auth';
 import { logActivity } from '../middleware/activityLogger';
 
 const router = express.Router();
 
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { patient_id, prescription_type } = req.query;
 
@@ -38,7 +38,7 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const prescription = db.prepare(`
@@ -61,7 +61,7 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 });
 
-router.get('/patient/:patientId', authenticate, async (req, res) => {
+router.get('/patient/:patientId', authenticateToken, async (req, res) => {
   try {
     const { patientId } = req.params;
     const prescriptions = db.prepare(`
@@ -80,7 +80,7 @@ router.get('/patient/:patientId', authenticate, async (req, res) => {
   }
 });
 
-router.post('/', authenticate, logActivity('prescription', 'create'), async (req, res) => {
+router.post('/', authenticateToken, logActivity('prescription', 'create'), async (req, res) => {
   try {
     const {
       patient_id,
@@ -136,7 +136,7 @@ router.post('/', authenticate, logActivity('prescription', 'create'), async (req
   }
 });
 
-router.put('/:id', authenticate, logActivity('prescription', 'update'), async (req, res) => {
+router.put('/:id', authenticateToken, logActivity('prescription', 'update'), async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -187,7 +187,7 @@ router.put('/:id', authenticate, logActivity('prescription', 'update'), async (r
   }
 });
 
-router.delete('/:id', authenticate, logActivity('prescription', 'delete'), async (req, res) => {
+router.delete('/:id', authenticateToken, logActivity('prescription', 'delete'), async (req, res) => {
   try {
     const { id } = req.params;
 
