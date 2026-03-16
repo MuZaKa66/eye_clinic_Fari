@@ -17,7 +17,7 @@ export const api = {
         body: JSON.stringify({ email, password, fullName })
       });
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ error: 'Signup failed' }));
         throw new Error(error.error || 'Signup failed');
       }
       return response.json();
@@ -30,7 +30,7 @@ export const api = {
         body: JSON.stringify({ email, password })
       });
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ error: 'Login failed' }));
         throw new Error(error.error || 'Login failed');
       }
       return response.json();
@@ -51,7 +51,7 @@ export const api = {
         body: JSON.stringify({ currentPassword, newPassword })
       });
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ error: 'Failed to change password' }));
         throw new Error(error.error || 'Failed to change password');
       }
       return response.json();
