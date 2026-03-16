@@ -11,6 +11,9 @@ import Appointments from './pages/Appointments';
 import Visits from './pages/Visits';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
+import Roles from './pages/Roles';
+import ActivityLogs from './pages/ActivityLogs';
+import Reports from './pages/Reports';
 
 function App() {
   return (
@@ -34,6 +37,11 @@ function App() {
           <Route path="/visits" element={<Visits />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
+
+          {/* Phase 6 Routes */}
+          <Route path="/admin/roles" element={<Roles />} />
+          <Route path="/admin/activity-logs" element={<ActivityLogs />} />
+          <Route path="/reports" element={<Reports />} />
 
           {/* Default Route */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

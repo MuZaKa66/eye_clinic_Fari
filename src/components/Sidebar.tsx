@@ -8,6 +8,9 @@ import {
   DollarSign,
   Settings,
   Eye,
+  Shield,
+  Activity,
+  BarChart3,
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -17,6 +20,9 @@ const Sidebar: React.FC = () => {
     { name: 'Appointments', href: '/appointments', icon: Calendar },
     { name: 'Visits', href: '/visits', icon: ClipboardList },
     { name: 'Billing', href: '/billing', icon: DollarSign },
+    { name: 'Reports', href: '/reports', icon: BarChart3 },
+    { name: 'Roles', href: '/admin/roles', icon: Shield },
+    { name: 'Activity Logs', href: '/admin/activity-logs', icon: Activity },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
