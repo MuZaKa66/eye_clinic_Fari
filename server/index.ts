@@ -6,6 +6,8 @@ import appointmentsRoutes from './routes/appointments.js';
 import visitsRoutes from './routes/visits.js';
 import billsRoutes from './routes/bills.js';
 import statsRoutes from './routes/stats.js';
+import trackingRoutes from './routes/tracking.js';
+import customFieldsRoutes from './routes/custom-fields.js';
 
 const app = express();
 const PORT = 3001;
@@ -19,6 +21,8 @@ app.use('/api/appointments', appointmentsRoutes);
 app.use('/api/visits', visitsRoutes);
 app.use('/api/bills', billsRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/tracking', trackingRoutes);
+app.use('/api/custom-fields', customFieldsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
