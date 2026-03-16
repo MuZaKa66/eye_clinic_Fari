@@ -1,4 +1,9 @@
 import db from '../database';
+import { randomBytes } from 'crypto';
+
+export function generateId(): string {
+  return randomBytes(16).toString('hex');
+}
 
 export function generatePatientId(): string {
   const result = db.prepare('SELECT COUNT(*) as count FROM patients').get() as { count: number };
