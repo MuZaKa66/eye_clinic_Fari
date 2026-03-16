@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
 import db from '../database';
 import { authenticateToken } from '../middleware/auth';
-import { checkRole } from '../middleware/rbac';
+import { requireRole } from '../middleware/rbac';
 import { generateId } from '../utils/idGenerator';
 
 const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get('/', checkRole(['admin']), (req: Request, res: Response) => {
+router.get('/', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const roles = db.prepare('SELECT * FROM roles ORDER BY is_system_role DESC, role_name').all();
 
@@ -29,7 +29,7 @@ router.get('/', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.get('/:id', checkRole(['admin']), (req: Request, res: Response) => {
+router.get('/:id', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -57,7 +57,7 @@ router.get('/:id', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.post('/', checkRole(['admin']), (req: Request, res: Response) => {
+router.post('/', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { roleName, description, permissions } = req.body;
 
@@ -86,7 +86,7 @@ router.post('/', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.put('/:id', checkRole(['admin']), (req: Request, res: Response) => {
+router.put('/:id', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { description, permissions } = req.body;
@@ -119,7 +119,7 @@ router.put('/:id', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:id', checkRole(['admin']), (req: Request, res: Response) => {
+router.delete('/:id', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -148,7 +148,7 @@ router.delete('/:id', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.get('/:roleId/permissions', checkRole(['admin']), (req: Request, res: Response) => {
+router.get('/:roleId/permissions', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { roleId } = req.params;
 
@@ -174,7 +174,7 @@ router.get('/:roleId/permissions', checkRole(['admin']), (req: Request, res: Res
   }
 });
 
-router.put('/:roleId/permissions', checkRole(['admin']), (req: Request, res: Response) => {
+router.put('/:roleId/permissions', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { roleId } = req.params;
     const { permissions } = req.body;

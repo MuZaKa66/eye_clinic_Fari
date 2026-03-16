@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import db from '../database';
 import { authenticateToken } from '../middleware/auth';
 import { generateId } from '../utils/idGenerator';
-import { checkRole } from '../middleware/rbac';
+import { requireRole } from '../middleware/rbac';
 
 const router = express.Router();
 
@@ -68,7 +68,7 @@ router.get('/definitions/:id', authenticateToken, (req: Request, res: Response) 
   }
 });
 
-router.post('/definitions', authenticateToken, checkRole(['admin']), (req: Request, res: Response) => {
+router.post('/definitions', authenticateToken, requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const {
       fieldName,
@@ -115,7 +115,7 @@ router.post('/definitions', authenticateToken, checkRole(['admin']), (req: Reque
   }
 });
 
-router.put('/definitions/:id', authenticateToken, checkRole(['admin']), (req: Request, res: Response) => {
+router.put('/definitions/:id', authenticateToken, requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const {
@@ -170,7 +170,7 @@ router.put('/definitions/:id', authenticateToken, checkRole(['admin']), (req: Re
   }
 });
 
-router.delete('/definitions/:id', authenticateToken, checkRole(['admin']), (req: Request, res: Response) => {
+router.delete('/definitions/:id', authenticateToken, requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

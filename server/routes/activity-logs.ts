@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 import db from '../database';
 import { authenticateToken } from '../middleware/auth';
-import { checkRole } from '../middleware/rbac';
+import { requireRole } from '../middleware/rbac';
 
 const router = express.Router();
 
 router.use(authenticateToken);
-router.use(checkRole(['admin']));
+router.use(requireRole(['admin']));
 
 router.get('/', (req: Request, res: Response) => {
   try {

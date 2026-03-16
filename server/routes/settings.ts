@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import db from '../database';
 import { authenticateToken } from '../middleware/auth';
-import { checkRole } from '../middleware/rbac';
+import { requireRole } from '../middleware/rbac';
 import { generateId } from '../utils/idGenerator';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get('/', checkRole(['admin']), (req: Request, res: Response) => {
+router.get('/', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const settings = db.prepare('SELECT * FROM system_settings ORDER BY setting_key').all();
 
@@ -52,7 +52,7 @@ router.get('/:key', (req: Request, res: Response) => {
   }
 });
 
-router.put('/:key', checkRole(['admin']), (req: Request, res: Response) => {
+router.put('/:key', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { key } = req.params;
     const { value, description } = req.body;
@@ -80,7 +80,7 @@ router.put('/:key', checkRole(['admin']), (req: Request, res: Response) => {
   }
 });
 
-router.post('/backup', checkRole(['admin']), async (req: Request, res: Response) => {
+router.post('/backup', requireRole(['admin']), async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
     const backupDir = join(__dirname, '../../backups');
@@ -115,7 +115,7 @@ router.post('/backup', checkRole(['admin']), async (req: Request, res: Response)
   }
 });
 
-router.get('/backups/list', checkRole(['admin']), (req: Request, res: Response) => {
+router.get('/backups/list', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const backups = db.prepare(`
       SELECT b.*,
@@ -132,7 +132,7 @@ router.get('/backups/list', checkRole(['admin']), (req: Request, res: Response) 
   }
 });
 
-router.post('/import-services', checkRole(['admin']), (req: Request, res: Response) => {
+router.post('/import-services', requireRole(['admin']), (req: Request, res: Response) => {
   try {
     const { services } = req.body;
 
