@@ -1,6 +1,6 @@
 # Eye Clinic Management System - Administrator Manual
 
-**Version:** 3.1.0
+**Version:** 4.0.1
 **For:** System Administrators
 **Last Updated:** March 16, 2026
 
@@ -53,9 +53,9 @@ As an administrator, you can:
 
 **Default Credentials:**
 ```
-URL: http://your-clinic-domain.com (or https://)
-Username: admin
-Password: Admin@123
+URL: http://localhost:5173 (development) or http://your-lan-ip:5173 (LAN access)
+Email: admin@clinic.com
+Password: admin123
 ```
 
 ⚠️ **SECURITY WARNING:** You MUST change this password immediately!
@@ -63,30 +63,26 @@ Password: Admin@123
 **Login Steps:**
 1. Open your web browser
 2. Navigate to your clinic's URL
-3. Enter username: `admin`
-4. Enter password: `Admin@123`
+3. Enter email: `admin@clinic.com`
+4. Enter password: `admin123`
 5. Click "Login"
 
 ### 2. Change Admin Password
 
 **IMMEDIATELY after first login:**
 
-1. Click your profile name in top-right corner
-2. Select "Profile Settings" or "Settings"
-3. Navigate to "Change Password" section
-4. Enter:
-   - Current Password: `Admin@123`
+1. Click "Settings" in the sidebar navigation
+2. Click on the "Security" tab
+3. Fill in the password change form:
+   - Current Password: `admin123`
    - New Password: `[your-strong-password]`
-   - Confirm Password: `[your-strong-password]`
-5. Click "Update Password"
-6. Log out and log back in with new password
+   - Confirm New Password: `[your-strong-password]`
+4. Click "Update Password"
+5. Log out and log back in with new password
 
 **Password Requirements:**
-- Minimum 8 characters
-- At least one uppercase letter (A-Z)
-- At least one lowercase letter (a-z)
-- At least one number (0-9)
-- At least one special character (@, #, $, etc.)
+- Minimum 6 characters (recommended: 8+ characters)
+- Use a mix of letters, numbers, and special characters
 - Not a common password
 
 **Examples of Strong Passwords:**

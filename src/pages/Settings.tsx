@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Save, User, Lock, Bell } from 'lucide-react';
 import Layout from '../components/Layout';
 import { useAuth } from '../lib/AuthContext';
+import { api } from '../lib/api';
 
 const Settings: React.FC = () => {
   const { user } = useAuth();
@@ -57,16 +58,19 @@ const Settings: React.FC = () => {
 
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await api.auth.changePassword(passwordData.currentPassword, passwordData.newPassword);
       setSuccess('Password changed successfully');
-      setLoading(false);
       setPasswordData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       });
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to change password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleNotificationUpdate = async (e: React.FormEvent) => {

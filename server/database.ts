@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -528,5 +529,20 @@ initServices.run('srv-005', 'OCT Scan', 'OCT', 'Optical coherence tomography', 5
 initServices.run('srv-006', 'A-Scan', 'ASCAN', 'A-Scan biometry', 2500, 'Diagnostic');
 initServices.run('srv-007', 'Contact Lens Fitting', 'CLFIT', 'Contact lens fitting and training', 1500, 'Service');
 initServices.run('srv-008', 'Prescription', 'RX', 'Prescription fee', 500, 'Service');
+
+const initDefaultAdmin = async () => {
+  const existingAdmin = db.prepare('SELECT id FROM users WHERE email = ?').get('admin@clinic.com');
+
+  if (!existingAdmin) {
+    const adminPasswordHash = await bcrypt.hash('admin123', 10);
+    db.prepare(`
+      INSERT INTO users (id, email, password_hash, full_name, role, is_active)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run('default-admin-id', 'admin@clinic.com', adminPasswordHash, 'System Administrator', 'admin', 1);
+    console.log('Default admin user created: admin@clinic.com / admin123');
+  }
+};
+
+initDefaultAdmin().catch(console.error);
 
 export default db;

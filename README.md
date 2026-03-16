@@ -72,8 +72,10 @@ A comprehensive, production-ready clinic management system built with React, Typ
 5. **Access the application**
    Open your browser and navigate to `http://localhost:5173`
 
-6. **Create your first account**
-   Click "Sign up" and create your admin account
+6. **Login with default admin credentials**
+   - Email: `admin@clinic.com`
+   - Password: `admin123`
+   - **Important:** Change the default password immediately after first login via Settings > Security
 
 ## Database
 
@@ -164,8 +166,10 @@ eye-clinic-management-system/
 ## Security
 
 - All passwords are hashed using bcrypt
-- JWT tokens for authentication with 24-hour expiry
+- JWT tokens for authentication with 7-day expiry
 - Role-based access control (Admin, Doctor, Receptionist, Accountant)
+- Password change functionality with validation
+- Pre-seeded admin account (change password immediately after first login)
 - All API routes (except auth) require authentication
 - SQL injection protection through parameterized queries
 - XSS prevention through input sanitization
