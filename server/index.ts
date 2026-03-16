@@ -14,6 +14,7 @@ import rolesRoutes from './routes/roles.js';
 import activityLogsRoutes from './routes/activity-logs.js';
 import settingsRoutes from './routes/settings.js';
 import dashboardRoutes from './routes/dashboard.js';
+import backupRoutes from './routes/backup.js';
 
 const app = express();
 const PORT = 3001;
@@ -35,6 +36,7 @@ app.use('/api/roles', rolesRoutes);
 app.use('/api/activity-logs', activityLogsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/backup', backupRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

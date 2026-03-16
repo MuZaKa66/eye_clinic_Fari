@@ -11,6 +11,7 @@ import {
   Shield,
   Activity,
   BarChart3,
+  Database,
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -23,6 +24,7 @@ const Sidebar: React.FC = () => {
     { name: 'Reports', href: '/reports', icon: BarChart3 },
     { name: 'Roles', href: '/admin/roles', icon: Shield },
     { name: 'Activity Logs', href: '/admin/activity-logs', icon: Activity },
+    { name: 'Backup', href: '/admin/backup', icon: Database },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
