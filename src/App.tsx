@@ -8,8 +8,11 @@ import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
 import PatientForm from './pages/PatientForm';
 import Appointments from './pages/Appointments';
+import AppointmentCalendar from './pages/AppointmentCalendar';
 import Visits from './pages/Visits';
 import VisitForm from './pages/VisitForm';
+import Prescriptions from './pages/Prescriptions';
+import PrescriptionForm from './pages/PrescriptionForm';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
 import Roles from './pages/Roles';
@@ -36,9 +39,13 @@ function App() {
 
           {/* Other Routes */}
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/calendar" element={<AppointmentCalendar />} />
           <Route path="/visits" element={<Visits />} />
           <Route path="/visits/new" element={<VisitForm />} />
           <Route path="/visits/:id/edit" element={<VisitForm />} />
+          <Route path="/prescriptions" element={<Prescriptions />} />
+          <Route path="/prescriptions/new" element={<PrescriptionForm />} />
+          <Route path="/prescriptions/:id/edit" element={<PrescriptionForm />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings />} />
 

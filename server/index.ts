@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import authRoutes from './routes/auth.js';
 import patientsRoutes from './routes/patients.js';
 import appointmentsRoutes from './routes/appointments.js';
@@ -15,17 +16,22 @@ import activityLogsRoutes from './routes/activity-logs.js';
 import settingsRoutes from './routes/settings.js';
 import dashboardRoutes from './routes/dashboard.js';
 import backupRoutes from './routes/backup.js';
+import prescriptionsRoutes from './routes/prescriptions.js';
+import uploadsRoutes from './routes/uploads.js';
 
 const app = express();
 const PORT = 3001;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientsRoutes);
 app.use('/api/appointments', appointmentsRoutes);
 app.use('/api/visits', visitsRoutes);
+app.use('/api/prescriptions', prescriptionsRoutes);
+app.use('/api/uploads', uploadsRoutes);
 app.use('/api/bills', billsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/tracking', trackingRoutes);
