@@ -360,11 +360,173 @@ const insertSettings = db.prepare(`
   INSERT OR IGNORE INTO system_settings (id, setting_key, setting_value, description) VALUES (?, ?, ?, ?)
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS roles (
+    id TEXT PRIMARY KEY,
+    role_name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    permissions TEXT NOT NULL,
+    is_system_role INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS activity_logs (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    action TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    entity_id TEXT,
+    changes TEXT,
+    ip_address TEXT,
+    user_agent TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS filter_presets (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    preset_name TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    filter_data TEXT NOT NULL,
+    is_default INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS invoice_templates (
+    id TEXT PRIMARY KEY,
+    template_name TEXT NOT NULL,
+    header_text TEXT,
+    footer_text TEXT,
+    terms_conditions TEXT,
+    is_default INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS service_catalog (
+    id TEXT PRIMARY KEY,
+    service_name TEXT NOT NULL,
+    service_code TEXT UNIQUE,
+    description TEXT,
+    default_price REAL NOT NULL DEFAULT 0,
+    category TEXT,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS payment_receipts (
+    id TEXT PRIMARY KEY,
+    receipt_number TEXT UNIQUE NOT NULL,
+    payment_id TEXT NOT NULL,
+    bill_id TEXT NOT NULL,
+    patient_id TEXT NOT NULL,
+    amount REAL NOT NULL,
+    payment_method TEXT NOT NULL,
+    generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    generated_by TEXT NOT NULL,
+    FOREIGN KEY (payment_id) REFERENCES payments(id),
+    FOREIGN KEY (bill_id) REFERENCES bills(id),
+    FOREIGN KEY (patient_id) REFERENCES patients(id),
+    FOREIGN KEY (generated_by) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS doctor_signatures (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL UNIQUE,
+    signature_path TEXT NOT NULL,
+    qualifications TEXT,
+    registration_number TEXT,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS backups (
+    id TEXT PRIMARY KEY,
+    backup_filename TEXT NOT NULL,
+    backup_path TEXT NOT NULL,
+    backup_size INTEGER,
+    backup_type TEXT DEFAULT 'manual',
+    created_by TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_activity_logs_user ON activity_logs(user_id);
+  CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON activity_logs(entity_type, entity_id);
+  CREATE INDEX IF NOT EXISTS idx_activity_logs_created ON activity_logs(created_at);
+  CREATE INDEX IF NOT EXISTS idx_filter_presets_user ON filter_presets(user_id);
+  CREATE INDEX IF NOT EXISTS idx_service_catalog_active ON service_catalog(is_active);
+  CREATE INDEX IF NOT EXISTS idx_payment_receipts_bill ON payment_receipts(bill_id);
+  CREATE INDEX IF NOT EXISTS idx_payment_receipts_patient ON payment_receipts(patient_id);
+  CREATE INDEX IF NOT EXISTS idx_bills_payment_status ON bills(payment_status);
+  CREATE INDEX IF NOT EXISTS idx_bills_billing_date ON bills(billing_date);
+`);
+
 insertSettings.run('1', 'clinic_name', 'Eye Care Clinic', 'Clinic name for reports');
 insertSettings.run('2', 'default_appointment_duration', '30', 'Default appointment duration in minutes');
 insertSettings.run('3', 'currency', 'PKR', 'Currency for billing');
 insertSettings.run('4', 'date_format', 'DD/MM/YYYY', 'Date display format');
 insertSettings.run('5', 'clinic_start_time', '09:00', 'Clinic opening time');
 insertSettings.run('6', 'clinic_end_time', '18:00', 'Clinic closing time');
+insertSettings.run('7', 'clinic_address', '', 'Clinic address for invoices');
+insertSettings.run('8', 'clinic_phone', '', 'Clinic phone for invoices');
+insertSettings.run('9', 'clinic_email', '', 'Clinic email for invoices');
+insertSettings.run('10', 'tax_enabled', '0', 'Enable tax on invoices');
+insertSettings.run('11', 'tax_rate', '0', 'Tax rate percentage');
+insertSettings.run('12', 'invoice_terms', 'Payment due within 30 days', 'Invoice payment terms');
+
+const initRoles = db.prepare(`INSERT OR IGNORE INTO roles (id, role_name, description, permissions, is_system_role) VALUES (?, ?, ?, ?, ?)`);
+
+const adminPermissions = JSON.stringify({
+  patients: ['view', 'create', 'edit', 'delete'],
+  clinical: ['view', 'create', 'edit', 'delete'],
+  appointments: ['view', 'create', 'edit', 'delete', 'cancel'],
+  billing: ['view', 'create', 'edit', 'delete', 'reports'],
+  admin: ['users', 'roles', 'settings', 'logs', 'export']
+});
+
+const doctorPermissions = JSON.stringify({
+  patients: ['view', 'create', 'edit'],
+  clinical: ['view', 'create', 'edit'],
+  appointments: ['view', 'create', 'edit'],
+  billing: ['view'],
+  admin: []
+});
+
+const receptionistPermissions = JSON.stringify({
+  patients: ['view', 'create', 'edit'],
+  clinical: ['view'],
+  appointments: ['view', 'create', 'edit', 'cancel'],
+  billing: ['view'],
+  admin: []
+});
+
+const accountantPermissions = JSON.stringify({
+  patients: ['view'],
+  clinical: ['view'],
+  appointments: ['view'],
+  billing: ['view', 'create', 'edit', 'reports'],
+  admin: []
+});
+
+initRoles.run('role-admin', 'admin', 'System Administrator', adminPermissions, 1);
+initRoles.run('role-doctor', 'doctor', 'Medical Doctor', doctorPermissions, 1);
+initRoles.run('role-receptionist', 'receptionist', 'Receptionist', receptionistPermissions, 1);
+initRoles.run('role-accountant', 'accountant', 'Accountant', accountantPermissions, 1);
+
+const initServices = db.prepare(`INSERT OR IGNORE INTO service_catalog (id, service_name, service_code, description, default_price, category) VALUES (?, ?, ?, ?, ?, ?)`);
+
+initServices.run('srv-001', 'Consultation Fee', 'CONSULT', 'General consultation', 2000, 'Consultation');
+initServices.run('srv-002', 'Follow-up Visit', 'FOLLOWUP', 'Follow-up consultation', 1500, 'Consultation');
+initServices.run('srv-003', 'Eye Examination', 'EYEEXAM', 'Complete eye examination', 1000, 'Examination');
+initServices.run('srv-004', 'Visual Field Test', 'VFT', 'Visual field testing', 3000, 'Diagnostic');
+initServices.run('srv-005', 'OCT Scan', 'OCT', 'Optical coherence tomography', 5000, 'Imaging');
+initServices.run('srv-006', 'A-Scan', 'ASCAN', 'A-Scan biometry', 2500, 'Diagnostic');
+initServices.run('srv-007', 'Contact Lens Fitting', 'CLFIT', 'Contact lens fitting and training', 1500, 'Service');
+initServices.run('srv-008', 'Prescription', 'RX', 'Prescription fee', 500, 'Service');
 
 export default db;
